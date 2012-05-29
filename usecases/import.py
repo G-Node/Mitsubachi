@@ -16,7 +16,8 @@ def import_swcs(swcs):
         import_swc(swc)
 
 def import_swc(swc):
-    m_swc   = Morphology.specify(Morphology.swc_parse(swc))
+    m_swc   = Morphology.swc_parse(swc)
+    m_swc   = Morphology.specify(m_swc)
 
     print("uploading data according to '%s'." %(swc)) ,
     start_time = time.time()

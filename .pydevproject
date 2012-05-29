@@ -7,7 +7,4 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/Mitsubachi</path>
 </pydev_pathproperty>
-<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-<path>/usr/local/lib/python2.6/dist-packages/SQLAlchemy-0.6.6-py2.6.egg</path>
-</pydev_pathproperty>
 </pydev_project>
