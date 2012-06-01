@@ -6,7 +6,7 @@ Created on 29.02.2012
 '''
 import datajongleur
 import time
-import morphjongleur.io.swc
+import morphjongleur.util.parser.swc
 from morphjongleur.orm.datajongleur.morphology import *
 
 session = datajongleur.get_session()
@@ -17,7 +17,6 @@ def import_swcs(swcs):
 
 def import_swc(swc):
     m_swc   = Morphology.swc_parse(swc)
-    m_swc   = Morphology.specify(m_swc)
 
     print("uploading data according to '%s'." %(swc)) ,
     start_time = time.time()
@@ -40,6 +39,7 @@ if __name__ == '__main__':
     root_dir = '/home/stransky/git/mitsubachi/'
     #root_dir = '../../../'
     import_swcs([
+#         root_dir + 'data/test.swc', 
          root_dir + 'data/H060602DB_10_2_zentai_.swc', 
          root_dir + 'data/H060602VB_10_2_zentai_.swc', 
          root_dir + 'data/H060607DB_10_2(zentai).swc', 
