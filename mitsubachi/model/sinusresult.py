@@ -220,13 +220,41 @@ def plot_phaseshift_candlestick(sinus_results, morphology, picture_file=None, pi
         matplotlib.pyplot.show()
     matplotlib.pyplot.close()
  
-def plot_voltage_candlestick(sinus_results, morphology, picture_file=None, picture_formats=['png', 'pdf', 'svg']):
-    import matplotlib.pyplot
+def plot_voltage_candlestick(sinus_results, morphology, color='#000000', picture_file=None, picture_formats=['png', 'pdf', 'svg']):
+    def peval(x,p):
+        return p[0] * x ** p[1]
+    
+    def residuals(p, y, x): 
+        err = ( y - peval(x,p) )**2
+        return err
+
     f   = {}
     for r in sinus_results:
         if not f.has_key(r.frequency):
             f[r.frequency] = []
         f[r.frequency].append((r.v_maximum - r.v_minimum)/2.)
+    
+    import numpy
+    import matplotlib.pyplot
+    import scipy.optimize
+    x = []
+    y = []
+    for frequency in sorted(f.keys()):
+        x.append(frequency)
+        y.append(numpy.average(f[frequency]))
+    p   = numpy.array([10.,-0.5])
+    plsq= scipy.optimize.leastsq(residuals, p, args=(y, x))
+    errs= residuals(plsq[0], y, x)
+    avg = numpy.average( errs )
+    mxm = numpy.max( errs )
+    mnm = numpy.min( errs )
+    print x
+    print peval(x,plsq[0])
+    print peval(x,p)
+    matplotlib.pyplot.plot(x,peval(x,plsq[0]), color=color)
+    titles=[]
+    titles.append( "exponential fit: %f * e^ %f" % (plsq[0][0], plsq[0][1]) )
+    matplotlib.pyplot.legend(titles, loc='best')
 
     matplotlib.pyplot.title('Amplitude in '+str(morphology))
     matplotlib.pyplot.xticks(rotation=90)#  range(1+len(data)),titles
@@ -257,11 +285,11 @@ if __name__ == '__main__':
             )
     # must be mapped before Object is created
     import morphjongleur.orm.sinusresult
-    mapping = morphjongleur.orm.sinusresult.Mapper( db )
+    mapping = mrj.orm.sinusresult.Mapper( db )
     mapping.orm_map()
     mapping.create_tables()
     
-    picture_formats=['svg']#'png', 
+    picture_formats=['png', 'svg']#
     for m in ['H060602DB_10_2_zentai_','H060607DB_10_2(zentai)','H060602VB_10_2_zentai_','H060607VB_10_2(zentai)']:#'test', 
         print m,
         print "\t",
@@ -269,10 +297,10 @@ if __name__ == '__main__':
         for f in range(100,501,15):#(10,701,15) TODO: get from DB group by ... 
             results_f = mapping.load_experiment(m, f)
             try:
-                plot_delay_histogramm(      results_f, m, f, '/tmp/delay_histogramm_%s%iHz'    %(m,f), picture_formats )
-                plot_phaseshift_histogramm( results_f, m, f, '/tmp/phase_histogramm_%s%iHz'    %(m,f), picture_formats )
-                plot_voltage_histogramm(    results_f, m, f, '/tmp/voltage_histogramm_%s%iHz'  %(m,f), picture_formats )
-                plot_duration_histogramm(   results_f, m, f, '/tmp/duration_histogramm_%s%iHz' %(m,f), picture_formats )
+                #plot_delay_histogramm(      results_f, m, f, '/tmp/delay_histogramm_%s%iHz'    %(m,f), picture_formats )
+                #plot_phaseshift_histogramm( results_f, m, f, '/tmp/phase_histogramm_%s%iHz'    %(m,f), picture_formats )
+                #plot_voltage_histogramm(    results_f, m, f, '/tmp/voltage_histogramm_%s%iHz'  %(m,f), picture_formats )
+                #plot_duration_histogramm(   results_f, m, f, '/tmp/duration_histogramm_%s%iHz' %(m,f), picture_formats )
                 print f,  
             except IndexError, te:
                 pass
@@ -281,9 +309,9 @@ if __name__ == '__main__':
                 print traceback.format_exc()
             results.extend(results_f)
         try:
-            plot_delay_candlestick(      results, m, '/tmp/delay_candlestick_%s' %(m),  picture_formats )
-            plot_voltage_candlestick(    results, m, '/tmp/voltage_candlestick_%s'%(m), picture_formats )
-            plot_phaseshift_candlestick( results, m, '/tmp/phase_candlestick_%s' %(m),  picture_formats )
+            #plot_delay_candlestick(      results, m, '/tmp/delay_candlestick_%s' %(m),  picture_formats )
+            plot_voltage_candlestick(    results, m, '#000000', '/tmp/voltage_candlestick_%s'%(m), picture_formats )
+            #plot_phaseshift_candlestick( results, m, '/tmp/phase_candlestick_%s' %(m),  picture_formats )
             print ''
         except IndexError, te:
             pass
