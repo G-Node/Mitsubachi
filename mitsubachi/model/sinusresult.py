@@ -237,6 +237,8 @@ def plot_voltage_candlestick(sinus_results, morphology, color='#000000', picture
     import numpy
     import matplotlib.pyplot
     import scipy.optimize
+    matplotlib.rc('text', usetex=True)
+
     x = []
     y = []
     for frequency in sorted(f.keys()):
@@ -253,7 +255,7 @@ def plot_voltage_candlestick(sinus_results, morphology, color='#000000', picture
     print peval(x,p)
     matplotlib.pyplot.plot(x,peval(x,plsq[0]), color=color)
     titles=[]
-    titles.append( "exponential fit: %f * e^ %f" % (plsq[0][0], plsq[0][1]) )
+    titles.append( "exponential fit: $%f \cdot \exp(%f)$" % (plsq[0][0], plsq[0][1]) )
     matplotlib.pyplot.legend(titles, loc='best')
 
     matplotlib.pyplot.title('Amplitude in '+str(morphology))
